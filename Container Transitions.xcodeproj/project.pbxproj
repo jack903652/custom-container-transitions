@@ -17,6 +17,7 @@
 		29D3A716190C5EC100038CEC /* ContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 29D3A715190C5EC100038CEC /* ContainerViewController.m */; };
 		29D3A71C191054E400038CEC /* Animator.m in Sources */ = {isa = PBXBuildFile; fileRef = 29D3A71B191054E400038CEC /* Animator.m */; };
 		93860E311920091600F6B7FA /* PanGestureInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 93860E301920091600F6B7FA /* PanGestureInteractiveTransition.m */; };
+		93F0979419201A12007B86C0 /* AWPercentDrivenInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 93F0979319201A12007B86C0 /* AWPercentDrivenInteractiveTransition.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,8 @@
 		29D3A71B191054E400038CEC /* Animator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Animator.m; sourceTree = "<group>"; };
 		93860E2F1920091600F6B7FA /* PanGestureInteractiveTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanGestureInteractiveTransition.h; sourceTree = "<group>"; };
 		93860E301920091600F6B7FA /* PanGestureInteractiveTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanGestureInteractiveTransition.m; sourceTree = "<group>"; };
+		93F0979219201A12007B86C0 /* AWPercentDrivenInteractiveTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AWPercentDrivenInteractiveTransition.h; sourceTree = "<group>"; };
+		93F0979319201A12007B86C0 /* AWPercentDrivenInteractiveTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AWPercentDrivenInteractiveTransition.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +99,8 @@
 				29D3A71B191054E400038CEC /* Animator.m */,
 				93860E2F1920091600F6B7FA /* PanGestureInteractiveTransition.h */,
 				93860E301920091600F6B7FA /* PanGestureInteractiveTransition.m */,
+				93F0979219201A12007B86C0 /* AWPercentDrivenInteractiveTransition.h */,
+				93F0979319201A12007B86C0 /* AWPercentDrivenInteractiveTransition.m */,
 				29D3A6F4190C44CC00038CEC /* Images.xcassets */,
 				29D3A6E9190C44CC00038CEC /* Supporting Files */,
 			);
@@ -175,6 +180,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				29D3A71C191054E400038CEC /* Animator.m in Sources */,
+				93F0979419201A12007B86C0 /* AWPercentDrivenInteractiveTransition.m in Sources */,
 				29D3A6EF190C44CC00038CEC /* main.m in Sources */,
 				29D3A6F3190C44CC00038CEC /* AppDelegate.m in Sources */,
 				29D3A716190C5EC100038CEC /* ContainerViewController.m in Sources */,

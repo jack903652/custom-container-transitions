@@ -4,6 +4,8 @@
 //
 //  Created by Joachim Bondo on 30/04/2014.
 //
+//  Interactive transition support added by Alek Åström on 11/05/2014.
+//
 
 #import "ContainerViewController.h"
 #import "PanGestureInteractiveTransition.h"
@@ -22,9 +24,7 @@ static CGFloat const kButtonSlotHeight = 44;
 @property (nonatomic, assign, getter=isInteractive) BOOL interactive; /// Private setter for the interactive property.
 @end
 
-/** Instances of this private class perform the default transition animation which is to slide child views horizontally.
- @note The class only supports UIViewControllerAnimatedTransitioning at this point. Not UIViewControllerInteractiveTransitioning.
- */
+/// Instances of this private class perform the default transition animation which is to slide child views horizontally.
 @interface PrivateAnimatedTransition : NSObject <UIViewControllerAnimatedTransitioning>
 @end
 
@@ -89,7 +89,7 @@ static CGFloat const kButtonSlotHeight = 44;
     __weak typeof(self) wself = self;
     self.defaultInteractionController = [[PanGestureInteractiveTransition alloc] initWithGestureRecognizerInView:self.privateContainerView recognizedBlock:^(UIPanGestureRecognizer *recognizer) {
         BOOL leftToRight = [recognizer velocityInView:recognizer.view].x > 0;
-                
+        
         NSUInteger currentVCIndex = [self.viewControllers indexOfObject:self.selectedViewController];
         if (!leftToRight && currentVCIndex != self.viewControllers.count-1) {
             [wself setSelectedViewController:self.viewControllers[currentVCIndex+1]];
@@ -193,7 +193,11 @@ static CGFloat const kButtonSlotHeight = 44;
 	PrivateTransitionContext *transitionContext = [[PrivateTransitionContext alloc] initWithFromViewController:fromViewController toViewController:toViewController goingRight:toIndex > fromIndex];
 	
 	transitionContext.animated = YES;
-	transitionContext.interactive = NO;
+    
+    // At the start of the transition, we need to find out if it should be interactive or not. We do this by trying to fetch an interaction controller.
+    id<UIViewControllerInteractiveTransitioning> interactionController = [self _interactionControllerForAnimator:animator];
+    
+	transitionContext.interactive = (interactionController != nil);
 	transitionContext.completionBlock = ^(BOOL didComplete) {
 		[fromViewController.view removeFromSuperview];
 		[fromViewController removeFromParentViewController];
@@ -206,7 +210,21 @@ static CGFloat const kButtonSlotHeight = 44;
 	};
 	
 	self.privateButtonsView.userInteractionEnabled = NO; // Prevent user tapping buttons mid-transition, messing up state
-	[animator animateTransition:transitionContext];
+    if ([transitionContext isInteractive]) {
+        [interactionController startInteractiveTransition:transitionContext];
+    } else {
+        [animator animateTransition:transitionContext];
+    }
+}
+
+- (id<UIViewControllerInteractiveTransitioning>)_interactionControllerForAnimator:(id<UIViewControllerAnimatedTransitioning>)animationController {
+    
+    if (self.defaultInteractionController.recognizer.state == UIGestureRecognizerStateBegan) {
+        self.defaultInteractionController.animator = animationController;
+        return self.defaultInteractionController;
+    } else {
+        return nil;
+    }
 }
 
 @end
@@ -232,9 +250,9 @@ static CGFloat const kButtonSlotHeight = 44;
 		self.presentationStyle = UIModalPresentationCustom;
 		self.containerView = fromViewController.view.superview;
 		self.privateViewControllers = @{
-			UITransitionContextFromViewControllerKey:fromViewController,
-			UITransitionContextToViewControllerKey:toViewController,
-		};
+                                        UITransitionContextFromViewControllerKey:fromViewController,
+                                        UITransitionContextToViewControllerKey:toViewController,
+                                        };
 		
 		// Set the view frame properties which make sense in our specialized ContainerViewController context. Views appear from and disappear to the sides, corresponding to where the icon buttons are positioned. So tapping a button to the right of the currently selected, makes the view disappear to the left and the new view appear from the right. The animator object can choose to use this to determine whether the transition should be going left to right, or right to left, for example.
 		CGFloat travelDistance = (goingRight ? -self.containerView.bounds.size.width : self.containerView.bounds.size.width);
