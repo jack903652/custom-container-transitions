@@ -117,6 +117,10 @@ static CGFloat const kButtonSlotHeight = 44;
 	[self _transitionToChildViewController:selectedViewController];
 }
 
+- (UIGestureRecognizer *)interactiveTransitionGestureRecognizer {
+    return self.defaultInteractionController.recognizer;
+}
+
 #pragma mark Private Methods
 
 - (void)_addChildViewControllerButtons {
@@ -184,6 +188,7 @@ static CGFloat const kButtonSlotHeight = 44;
 	if ([self.delegate respondsToSelector:@selector (containerViewController:animationControllerForTransitionFromViewController:toViewController:)]) {
 		animator = [self.delegate containerViewController:self animationControllerForTransitionFromViewController:fromViewController toViewController:toViewController];
 	}
+    BOOL animatorIsDefault = (animator == nil);
 	animator = (animator ?: [[PrivateAnimatedTransition alloc] init]);
 	
 	// Because of the nature of our view controller, with horizontally arranged buttons, we instantiate our private transition context with information about whether this is a left-to-right or right-to-left transition. The animator can use this information if it wants.
@@ -194,7 +199,7 @@ static CGFloat const kButtonSlotHeight = 44;
 	transitionContext.animated = YES;
     
     // At the start of the transition, we need to find out if it should be interactive or not. We do this by trying to fetch an interaction controller.
-    id<UIViewControllerInteractiveTransitioning> interactionController = [self _interactionControllerForAnimator:animator];
+    id<UIViewControllerInteractiveTransitioning> interactionController = [self _interactionControllerForAnimator:animator animatorIsDefault:animatorIsDefault];
     
 	transitionContext.interactive = (interactionController != nil);
 	transitionContext.completionBlock = ^(BOOL didComplete) {
@@ -229,11 +234,13 @@ static CGFloat const kButtonSlotHeight = 44;
     [self _updateButtonSelection];
 }
 
-- (id<UIViewControllerInteractiveTransitioning>)_interactionControllerForAnimator:(id<UIViewControllerAnimatedTransitioning>)animationController {
+- (id<UIViewControllerInteractiveTransitioning>)_interactionControllerForAnimator:(id<UIViewControllerAnimatedTransitioning>)animationController animatorIsDefault:(BOOL)animatorIsDefault {
     
     if (self.defaultInteractionController.recognizer.state == UIGestureRecognizerStateBegan) {
         self.defaultInteractionController.animator = animationController;
         return self.defaultInteractionController;
+    } else if (!animatorIsDefault && [self.delegate respondsToSelector:@selector(containerViewController:interactionControllerForAnimationController:)]) {
+        return [self.delegate containerViewController:self interactionControllerForAnimationController:animationController];
     } else {
         return nil;
     }

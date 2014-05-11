@@ -10,6 +10,7 @@
 #import "ContainerViewController.h"
 #import "ChildViewController.h"
 #import "Animator.h"
+#import "AWPercentDrivenInteractiveTransition.h"
 
 @interface AppDelegate () <ContainerViewControllerDelegate>
 @property (nonatomic, strong) UIWindow *privateWindow;
@@ -32,6 +33,24 @@
 	return [[Animator alloc] init];
 }
 
+- (id<UIViewControllerInteractiveTransitioning>)containerViewController:(ContainerViewController *)containerViewController interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController {
+    
+    // Fake an interactive transition to demonstrate interaction can be delegated
+    AWPercentDrivenInteractiveTransition *fakeInteraction = [[AWPercentDrivenInteractiveTransition alloc] initWithAnimator:animationController];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [fakeInteraction updateInteractiveTransition:0.25];
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [fakeInteraction updateInteractiveTransition:0.5];
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [fakeInteraction finishInteractiveTransition];
+    });
+    
+    return fakeInteraction;
+}
+
 #pragma mark - Private Methods
 
 - (UIViewController *)_configuredRootViewController {
@@ -39,6 +58,7 @@
 	NSArray *childViewControllers = [self _configuredChildViewControllers];
 	ContainerViewController *rootViewController = [[ContainerViewController alloc] initWithViewControllers:childViewControllers];
 //	rootViewController.delegate = self;
+//    rootViewController.interactiveTransitionGestureRecognizer.enabled = NO;
 	
 	return rootViewController;
 }

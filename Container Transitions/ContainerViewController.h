@@ -4,6 +4,8 @@
 //
 //  Created by Joachim Bondo on 30/04/2014.
 //
+//  Interactive transition support added by Alek Åström on 11/05/2014.
+//
 
 @import UIKit;
 @import Foundation;
@@ -25,6 +27,9 @@
 /// The currently selected and visible child view controller.
 @property (nonatomic, assign) UIViewController *selectedViewController;
 
+/// The gesture recognizer responsible for changing view controllers. (read-only)
+@property (nonatomic, readonly) UIGestureRecognizer *interactiveTransitionGestureRecognizer;
+
 /** Designated initializer.
  @note The view controllers array cannot be changed after initialization.
  */
@@ -41,4 +46,7 @@
 
 /// Called on the delegate to obtain a UIViewControllerAnimatedTransitioning object which can be used to animate a non-interactive transition.
 - (id <UIViewControllerAnimatedTransitioning>)containerViewController:(ContainerViewController *)containerViewController animationControllerForTransitionFromViewController:(UIViewController *)fromViewController toViewController:(UIViewController *)toViewController;
+
+/// Called on the delegate to obtain a UIViewControllerInteractiveTransitioning object which can be used to interact during a transition
+- (id <UIViewControllerInteractiveTransitioning>)containerViewController:(ContainerViewController *)containerViewController interactionControllerForAnimationController:(id <UIViewControllerAnimatedTransitioning>)animationController;
 @end
