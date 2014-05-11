@@ -16,6 +16,7 @@
 		29D3A713190C4AA800038CEC /* ChildViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 29D3A712190C4AA800038CEC /* ChildViewController.m */; };
 		29D3A716190C5EC100038CEC /* ContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 29D3A715190C5EC100038CEC /* ContainerViewController.m */; };
 		29D3A71C191054E400038CEC /* Animator.m in Sources */ = {isa = PBXBuildFile; fileRef = 29D3A71B191054E400038CEC /* Animator.m */; };
+		93860E311920091600F6B7FA /* PanGestureInteractiveTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 93860E301920091600F6B7FA /* PanGestureInteractiveTransition.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,8 @@
 		29D3A715190C5EC100038CEC /* ContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContainerViewController.m; sourceTree = "<group>"; };
 		29D3A71A191054E400038CEC /* Animator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Animator.h; sourceTree = "<group>"; };
 		29D3A71B191054E400038CEC /* Animator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Animator.m; sourceTree = "<group>"; };
+		93860E2F1920091600F6B7FA /* PanGestureInteractiveTransition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanGestureInteractiveTransition.h; sourceTree = "<group>"; };
+		93860E301920091600F6B7FA /* PanGestureInteractiveTransition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanGestureInteractiveTransition.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +94,8 @@
 				29D3A712190C4AA800038CEC /* ChildViewController.m */,
 				29D3A71A191054E400038CEC /* Animator.h */,
 				29D3A71B191054E400038CEC /* Animator.m */,
+				93860E2F1920091600F6B7FA /* PanGestureInteractiveTransition.h */,
+				93860E301920091600F6B7FA /* PanGestureInteractiveTransition.m */,
 				29D3A6F4190C44CC00038CEC /* Images.xcassets */,
 				29D3A6E9190C44CC00038CEC /* Supporting Files */,
 			);
@@ -174,6 +179,7 @@
 				29D3A6F3190C44CC00038CEC /* AppDelegate.m in Sources */,
 				29D3A716190C5EC100038CEC /* ContainerViewController.m in Sources */,
 				29D3A713190C4AA800038CEC /* ChildViewController.m in Sources */,
+				93860E311920091600F6B7FA /* PanGestureInteractiveTransition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

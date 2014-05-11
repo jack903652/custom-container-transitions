@@ -6,6 +6,7 @@
 //
 
 #import "ContainerViewController.h"
+#import "PanGestureInteractiveTransition.h"
 
 static CGFloat const kButtonSlotWidth = 64; // Also distance between button centers
 static CGFloat const kButtonSlotHeight = 44;
@@ -33,6 +34,8 @@ static CGFloat const kButtonSlotHeight = 44;
 @property (nonatomic, copy, readwrite) NSArray *viewControllers;
 @property (nonatomic, strong) UIView *privateButtonsView; /// The view hosting the buttons of the child view controllers.
 @property (nonatomic, strong) UIView *privateContainerView; /// The view hosting the child view controllers views.
+@property (nonatomic, strong) PanGestureInteractiveTransition *defaultInteractionController; /// The default, pan gesture enabled interactive transition controller.
+
 @end
 
 @implementation ContainerViewController
@@ -81,6 +84,19 @@ static CGFloat const kButtonSlotHeight = 44;
 	[self _addChildViewControllerButtons];
 	
 	self.view = rootView;
+    
+    // Add gesture recognizer and setup for interactive transition
+    __weak typeof(self) wself = self;
+    self.defaultInteractionController = [[PanGestureInteractiveTransition alloc] initWithGestureRecognizerInView:self.privateContainerView recognizedBlock:^(UIPanGestureRecognizer *recognizer) {
+        BOOL leftToRight = [recognizer velocityInView:recognizer.view].x > 0;
+                
+        NSUInteger currentVCIndex = [self.viewControllers indexOfObject:self.selectedViewController];
+        if (!leftToRight && currentVCIndex != self.viewControllers.count-1) {
+            [wself setSelectedViewController:self.viewControllers[currentVCIndex+1]];
+        } else if (leftToRight && currentVCIndex > 0) {
+            [wself setSelectedViewController:self.viewControllers[currentVCIndex-1]];
+        }
+    }];
 }
 
 - (void)viewDidLoad {
@@ -143,7 +159,7 @@ static CGFloat const kButtonSlotHeight = 44;
 
 - (void)_transitionToChildViewController:(UIViewController *)toViewController {
 	
-	UIViewController *fromViewController = ([self.childViewControllers count] > 0 ? self.childViewControllers[0] : nil);
+	UIViewController *fromViewController = self.selectedViewController;
 	if (toViewController == fromViewController || ![self isViewLoaded]) {
 		return;
 	}
