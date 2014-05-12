@@ -39,7 +39,11 @@
         if (!_leftToRightTransition) d *= -1;
         [self updateInteractiveTransition:d*0.5];
     } else if (recognizer.state >= UIGestureRecognizerStateEnded) {
-        [self finishInteractiveTransition];
+        if (self.percentComplete > 0.2) {
+            [self finishInteractiveTransition];
+        } else {
+            [self cancelInteractiveTransition];
+        }
     }
 }
 

@@ -112,11 +112,9 @@ static CGFloat const kButtonSlotHeight = 44;
 	return self.selectedViewController;
 }
 
--(void)setSelectedViewController:(UIViewController *)selectedViewController {
+- (void)setSelectedViewController:(UIViewController *)selectedViewController {
 	NSParameterAssert (selectedViewController);
 	[self _transitionToChildViewController:selectedViewController];
-	_selectedViewController = selectedViewController;
-	[self _updateButtonSelection];
 }
 
 #pragma mark Private Methods
@@ -176,6 +174,7 @@ static CGFloat const kButtonSlotHeight = 44;
 	if (!fromViewController) {
 		[self.privateContainerView addSubview:toViewController.view];
 		[toViewController didMoveToParentViewController:self];
+        [self _finishTransitionToChildViewController:toViewController];
 		return;
 	}
 	
@@ -199,14 +198,21 @@ static CGFloat const kButtonSlotHeight = 44;
     
 	transitionContext.interactive = (interactionController != nil);
 	transitionContext.completionBlock = ^(BOOL didComplete) {
-		[fromViewController.view removeFromSuperview];
-		[fromViewController removeFromParentViewController];
-		[toViewController didMoveToParentViewController:self];
-		
-		if ([animator respondsToSelector:@selector (animationEnded:)]) {
-			[animator animationEnded:didComplete];
-		}
-		self.privateButtonsView.userInteractionEnabled = YES;
+        
+        if (didComplete) {
+            [fromViewController.view removeFromSuperview];
+            [fromViewController removeFromParentViewController];
+            [toViewController didMoveToParentViewController:self];
+            [self _finishTransitionToChildViewController:toViewController];
+            
+        } else {
+            [toViewController.view removeFromSuperview];
+        }
+        
+        if ([animator respondsToSelector:@selector (animationEnded:)]) {
+            [animator animationEnded:didComplete];
+        }
+        self.privateButtonsView.userInteractionEnabled = YES;
 	};
 	
 	self.privateButtonsView.userInteractionEnabled = NO; // Prevent user tapping buttons mid-transition, messing up state
@@ -214,7 +220,13 @@ static CGFloat const kButtonSlotHeight = 44;
         [interactionController startInteractiveTransition:transitionContext];
     } else {
         [animator animateTransition:transitionContext];
+        [self _finishTransitionToChildViewController:toViewController];
     }
+}
+
+- (void)_finishTransitionToChildViewController:(UIViewController *)toViewController {
+    _selectedViewController = toViewController;
+    [self _updateButtonSelection];
 }
 
 - (id<UIViewControllerInteractiveTransitioning>)_interactionControllerForAnimator:(id<UIViewControllerAnimatedTransitioning>)animationController {
@@ -239,6 +251,7 @@ static CGFloat const kButtonSlotHeight = 44;
 @property (nonatomic, assign) CGRect privateAppearingToRect;
 @property (nonatomic, weak) UIView *containerView;
 @property (nonatomic, assign) UIModalPresentationStyle presentationStyle;
+@property (nonatomic, assign) BOOL transitionWasCancelled;
 @end
 
 @implementation PrivateTransitionContext
@@ -249,11 +262,12 @@ static CGFloat const kButtonSlotHeight = 44;
 	if ((self = [super init])) {
 		self.presentationStyle = UIModalPresentationCustom;
 		self.containerView = fromViewController.view.superview;
+        _transitionWasCancelled = NO;
 		self.privateViewControllers = @{
                                         UITransitionContextFromViewControllerKey:fromViewController,
                                         UITransitionContextToViewControllerKey:toViewController,
                                         };
-		
+        
 		// Set the view frame properties which make sense in our specialized ContainerViewController context. Views appear from and disappear to the sides, corresponding to where the icon buttons are positioned. So tapping a button to the right of the currently selected, makes the view disappear to the left and the new view appear from the right. The animator object can choose to use this to determine whether the transition should be going left to right, or right to left, for example.
 		CGFloat travelDistance = (goingRight ? -self.containerView.bounds.size.width : self.containerView.bounds.size.width);
 		self.privateDisappearingFromRect = self.privateAppearingToRect = self.containerView.bounds;
@@ -290,13 +304,9 @@ static CGFloat const kButtonSlotHeight = 44;
 	}
 }
 
-- (BOOL)transitionWasCancelled { return NO; } // Our non-interactive transition can't be cancelled (it could be interrupted, though)
-
-// Supress warnings by implementing empty interaction methods for the remainder of the protocol:
-
 - (void)updateInteractiveTransition:(CGFloat)percentComplete {}
-- (void)finishInteractiveTransition {}
-- (void)cancelInteractiveTransition {}
+- (void)finishInteractiveTransition {self.transitionWasCancelled = NO;}
+- (void)cancelInteractiveTransition {self.transitionWasCancelled = YES;}
 
 @end
 
@@ -332,6 +342,8 @@ static CGFloat const kInitialSpringVelocity = 0.5;
 		toViewController.view.alpha = 1;
 	} completion:^(BOOL finished) {
 		fromViewController.view.transform = CGAffineTransformIdentity;
+        fromViewController.view.alpha = 1;
+        
 		[transitionContext completeTransition:![transitionContext transitionWasCancelled]];
 	}];
 }
